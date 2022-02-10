@@ -16,22 +16,13 @@ const gameController = (() => {
   const playerTwo = Player("Player 2", "O");
   let playerTurn = playerOne;
   let isDone = false;
+  let winner = null;
 
   const changeTurn = () => {
     playerTurn = playerTurn == playerOne ? playerTwo : playerOne;
   }
 
-  const squares = document.querySelectorAll(".square");
-  squares.forEach((square, index) => {
-    square.addEventListener("click", (e) => {
-      if (e.target.textContent !== "" || isDone === true) return;
-      e.target.textContent = playerTurn.sign;
-      gameBoard.setBoard(playerTurn.sign, index);
-      changeTurn();
-      checkForWin();
-      checkForDraw();
-    })
-  })
+  const getPlayerTurn = () => playerTurn;
 
   const checkRow = (sign) => {
     let rowCondition = 
@@ -65,15 +56,13 @@ const gameController = (() => {
     return checkValue.some(el => el == true); 
   }
 
-  const winnerDisplay = document.querySelector(".winner");
-
   const checkForWin = () => {
     if (checkRow(playerOne.sign) || checkColumn(playerOne.sign) || checkDiagonal(playerOne.sign)) {
-      winnerDisplay.textContent = `${playerOne.name} wins!`;
+      winner = playerOne;
       isDone = true;
       return true;
     } else if (checkRow(playerTwo.sign) || checkColumn(playerTwo.sign) || checkDiagonal(playerTwo.sign)) {
-      winnerDisplay.textContent = `${playerTwo.name} wins!`;
+      winner = playerTwo;
       isDone = true;
       return true;
     }
@@ -91,9 +80,66 @@ const gameController = (() => {
       }
     }
 
-    winnerDisplay.textContent = "It's a draw!";
     isDone = true;
 
     return true;
   }
+
+  const getWinner = () => winner;
+
+  const getIsDone = () => isDone;
+
+  const restartGame = () => {
+    for (let i = 0; i < 9; i++) {
+      gameBoard.setBoard("", i)
+    }
+    playerTurn = playerOne;
+    isDone = false;
+    winner = null;
+  }
+
+  return {
+    getPlayerTurn,
+    changeTurn,
+    checkForWin,
+    checkForDraw,
+    getIsDone,
+    getWinner,
+    restartGame
+  }
+})();
+
+const displayController = (() => {
+
+  const squares = document.querySelectorAll(".square");
+  const winnerDisplay = document.querySelector(".winner");
+  const resetBtn = document.querySelector(".btn-restart")
+
+  squares.forEach((square, index) => {
+    square.addEventListener("click", (e) => {
+      if (e.target.textContent !== "" || gameController.getIsDone() === true) return;
+      let playerSign = gameController.getPlayerTurn().sign;
+      e.target.textContent = playerSign;
+      gameBoard.setBoard(playerSign, index);
+      gameController.changeTurn();
+      gameController.checkForWin();
+      gameController.checkForDraw();
+      displayWinner();
+    })
+  })
+
+  const displayWinner = () => {
+    if (gameController.checkForWin()) {
+      let winnerName = gameController.getWinner().name;
+      winnerDisplay.textContent = `${winnerName} wins!`;
+    } else if (gameController.checkForDraw()) {
+      winnerDisplay.textContent = "It's a draw!";
+    }
+  }
+
+  resetBtn.addEventListener("click", () => {
+    gameController.restartGame();
+    winnerDisplay.textContent = "";
+    squares.forEach(square => square.textContent = "");
+  })
 })();
