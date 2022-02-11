@@ -9,20 +9,53 @@
   <script src="./script.js" defer></script>
 </head>
 <body>
-  <h1>Tic-Tac-Toe</h1>
+  <header>
+    <h1>Tic-Tac-Toe</h1>
+  </header>
 
-  <div class="winner"></div>
-  <div class="board-container">
-    <div class="square"></div>
-    <div class="square"></div>
-    <div class="square"></div>
-    <div class="square"></div>
-    <div class="square"></div>
-    <div class="square"></div>
-    <div class="square"></div>
-    <div class="square"></div>
-    <div class="square"></div>
-  </div>
-  <button class="btn-restart">Restart Game</button>
+  <main>
+    <div class="before-game">
+      <div class="players-container">
+        <div class="player">
+          <span class="player-name player-one-display">Player 1</span>
+          <span class="player-sign">X</span>
+        </div>
+        <span class="versus">VS</span>
+        <div class="player">
+          <span class="player-name player-two-display">Player 2</span>
+          <span class="player-sign">O</span>
+        </div>
+      </div>
+      <div class="before-game-btn">
+        <button class="btn-edit-name">Edit Player Name</button>
+        <button class="btn-start">Start Game</button>
+      </div>
+    </div>
+
+    <div class="edit-name-modal">
+      <form class="edit-name-form" action="#">
+        <span class="edit-name-form-header">Edit Player Name</span>
+        <input type="text" id="player-one-name" placeholder="Player 1">
+        <input type="text" id="player-two-name" placeholder="Player 2">
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+
+    <div class="game-container">
+      <span class="info"></span>
+      <div class="board-container">
+        <div class="square no-bd-top no-bd-left"></div>
+        <div class="square no-bd-top"></div>
+        <div class="square no-bd-top no-bd-right"></div>
+        <div class="square no-bd-left"></div>
+        <div class="square"></div>
+        <div class="square no-bd-right"></div>
+        <div class="square no-bd-bottom no-bd-left"></div>
+        <div class="square no-bd-bottom"></div>
+        <div class="square no-bd-bottom no-bd-right"></div>
+      </div>
+      <button class="btn-restart">Restart Game</button>
+    </div>
+  </main>
 </body>
 </html>

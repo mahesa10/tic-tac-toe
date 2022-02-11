@@ -11,12 +11,19 @@ const Player = ((name, sign) => {
   return {name, sign}
 });
 
+
 const gameController = (() => {
-  const playerOne = Player("Player 1", "X");
-  const playerTwo = Player("Player 2", "O");
+  let playerOne = Player("Player 1", "X");
+  let playerTwo = Player("Player 2", "O");
   let playerTurn = playerOne;
   let isDone = false;
   let winner = null;
+
+  const createPlayer = (name1, name2) => {
+    playerOne = Player(name1, "X");
+    playerTwo = Player(name2, "O");
+    playerTurn = playerOne;
+  }
 
   const changeTurn = () => {
     playerTurn = playerTurn == playerOne ? playerTwo : playerOne;
@@ -99,6 +106,7 @@ const gameController = (() => {
   }
 
   return {
+    createPlayer,
     getPlayerTurn,
     changeTurn,
     checkForWin,
@@ -109,11 +117,53 @@ const gameController = (() => {
   }
 })();
 
+
 const displayController = (() => {
 
+  const startBtn = document.querySelector(".btn-start");
+  const beforeGameDisplay = document.querySelector(".before-game");
+  const editNameBtn = document.querySelector(".btn-edit-name");
+  const editNameModal = document.querySelector(".edit-name-modal");
+  const editNameForm = document.querySelector(".edit-name-form");
+  const playerOneDisplay = document.querySelector(".player-one-display");
+  const playerTwoDisplay = document.querySelector(".player-two-display");
+  const gameDisplay = document.querySelector(".game-container");
   const squares = document.querySelectorAll(".square");
-  const winnerDisplay = document.querySelector(".winner");
-  const resetBtn = document.querySelector(".btn-restart")
+  const infoDisplay = document.querySelector(".info");
+  const restartBtn = document.querySelector(".btn-restart");
+
+  const startGame = () => {
+    gameDisplay.style.display = "flex";
+    beforeGameDisplay.style.display = "none";
+    displayTurn();
+  }
+
+  startBtn.addEventListener("click", () => startGame());
+
+  editNameBtn.addEventListener("click", () => editNameModal.style.display = "flex");
+
+  window.onclick = function(event) {
+    if (event.target == editNameModal) {
+      editNameModal.style.display = "none";
+    }
+  }
+
+  const editName = (e) => {
+    e.preventDefault();
+    let playerOneInput = document.querySelector("#player-one-name").value;
+    let playerTwoInput = document.querySelector("#player-two-name").value;
+    gameController.createPlayer(playerOneInput, playerTwoInput);
+    playerOneDisplay.textContent = playerOneInput;
+    playerTwoDisplay.textContent = playerTwoInput;
+    editNameModal.style.display = "none";
+  }
+
+  editNameForm.addEventListener("submit", editName);
+
+  const displayTurn = () => {
+    let currentTurn = gameController.getPlayerTurn().name;
+    infoDisplay.textContent = `${currentTurn}'s turn`
+  };
 
   squares.forEach((square, index) => {
     square.addEventListener("click", (e) => {
@@ -122,6 +172,7 @@ const displayController = (() => {
       e.target.textContent = playerSign;
       gameBoard.setBoard(playerSign, index);
       gameController.changeTurn();
+      displayTurn();
       gameController.checkForWin();
       gameController.checkForDraw();
       displayWinner();
@@ -131,15 +182,15 @@ const displayController = (() => {
   const displayWinner = () => {
     if (gameController.checkForWin()) {
       let winnerName = gameController.getWinner().name;
-      winnerDisplay.textContent = `${winnerName} wins!`;
+      infoDisplay.textContent = `${winnerName} wins!`;
     } else if (gameController.checkForDraw()) {
-      winnerDisplay.textContent = "It's a draw!";
+      infoDisplay.textContent = "It's a draw!";
     }
-  }
+  };
 
-  resetBtn.addEventListener("click", () => {
+  restartBtn.addEventListener("click", () => {
     gameController.restartGame();
-    winnerDisplay.textContent = "";
+    displayTurn();
     squares.forEach(square => square.textContent = "");
-  })
+  });
 })();
